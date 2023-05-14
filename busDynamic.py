@@ -18,18 +18,23 @@ class SeatAllocator:
 
         for i in range(1, self.num_users + 1):
             for j in range(1, self.num_seats + 1):
-                if self.seats[j - 1] is None or any(
-                        (u is not None and u['id'] in self.users[i - 1]['cant_sit_with']) for u in self.seats[:j - 1]):
-                    F[i][j] = F[i - 1][j]
-                    decision[i][j] = 0
-                else:
-                    if F[i - 1][j] >= F[i - 1][j - 1] + 1:
+                if self.seats[j - 1] is not None:
+                    if self.seats[j - 1] is None or any(
+                            (isinstance(u, dict) and u['id'] in self.users[i - 1]['cant_sit_with']) for u in
+                            self.seats[:j]):
                         F[i][j] = F[i - 1][j]
                         decision[i][j] = 0
                     else:
-                        F[i][j] = F[i - 1][j - 1] + 1
-                        decision[i][j] = 1
-                        self.seats[j - 1] = self.users[i - 1]
+                        if F[i - 1][j] >= F[i - 1][j - 1] + 1:
+                            F[i][j] = F[i - 1][j]
+                            decision[i][j] = 0
+                        else:
+                            F[i][j] = F[i - 1][j - 1] + 1
+                            decision[i][j] = 1
+                            self.seats[j - 1] = self.users[i - 1]
+                else:
+                    F[i][j] = F[i - 1][j]
+                    decision[i][j] = 0
 
         self.seats = [user if user is not None else {'id': None, 'cant_sit_with': []} for user in self.seats]
 
@@ -58,15 +63,22 @@ if __name__ == '__main__':
     solution, unplaced_users, decision = sa.solve()
 
     print("Placed users:")
-    for i in range(len(solution)):
-        if solution[i]['id'] is None:
-            print("| |", end="\t")
-        else:
-            print(f"|{solution[i]['id']}|", end="\t")
-        if (i+1) % 5 == 0:  # change to the number of seats in a row
-            print()
+    for row in seats:
+        for seat in row:
+            if seat is None:
+                print("| |", end="\t")
+            else:
+                user = next((user for user in solution if user['id'] == seat), None)
+                if user is None:
+                    print("|X|", end="\t")
+                else:
+                    print(f"|{user['id']}|", end="\t")
+        print()
 
     print("\nUnplaced users:")
     for user in unplaced_users:
         print(f"{user['id']}")
+
+    print("\n")
+
 
