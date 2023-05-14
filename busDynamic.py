@@ -61,8 +61,19 @@ if __name__ == '__main__':
 
     sa = SeatAllocator(users, seats)
     solution, unplaced_users, decision = sa.solve()
+    while unplaced_users:
+        print("Unplaced users:")
+        for user in unplaced_users:
+            print(f"{user['id']}")
 
-    print("Placed users:")
+        print("\n")
+
+        seats = [[None, 0, None, None, 0], [0, 0, None], [0, 0, None], [0, 0, None]]
+        sa = SeatAllocator(unplaced_users, seats)
+        solution, unplaced_users, decision = sa.solve()
+
+    print("Final seating arrangement:")
+
     for row in seats:
         for seat in row:
             if seat is None:
@@ -75,10 +86,5 @@ if __name__ == '__main__':
                     print(f"|{user['id']}|", end="\t")
         print()
 
-    print("\nUnplaced users:")
-    for user in unplaced_users:
-        print(f"{user['id']}")
-
-    print("\n")
-
+    print("\nAll users placed.")
 
