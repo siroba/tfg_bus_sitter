@@ -41,6 +41,10 @@ class SeatAllocator:
         placed_users = [user for user in self.seats if user['id'] is not None]
         unplaced_users = [user for user in self.users if user not in placed_users]
 
+        print("placed_users :")
+        for user in placed_users:
+            print(user["id"])
+
         return self.seats, unplaced_users, decision
 
 
@@ -71,6 +75,14 @@ if __name__ == '__main__':
         seats = [[None, 0, None, None, 0], [0, 0, None], [0, 0, None], [0, 0, None]]
         sa = SeatAllocator(unplaced_users, seats)
         solution, unplaced_users, decision = sa.solve()
+
+    print("Decision matrix:")
+
+    for i in range(len(decision)):
+        for j in range(len(decision[i])):
+            print(int(decision[i][j]), end=' ')
+        print()
+
 
     print("Final seating arrangement:")
 
